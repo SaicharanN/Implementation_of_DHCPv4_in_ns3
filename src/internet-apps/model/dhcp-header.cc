@@ -48,6 +48,7 @@ DhcpHeader::DhcpHeader ()
   m_siAddr = addr;
   m_giAddr = addr;
   m_dhcps = addr;
+  m_brdaddr = addr; //new
   m_req = addr;
   m_route = addr;
   m_len = 240;
@@ -183,6 +184,29 @@ void DhcpHeader::SetMask (uint32_t addr)
 uint32_t DhcpHeader::GetMask (void) const
 {
   return m_mask;
+}
+
+void DhcpHeader::SetBroadcast (void)                       //new
+{
+  if(m_opt[OP_BRDADDR] == false)
+   {
+     m_len += 6;
+     m_opt[OP_BRDADDR] = true;
+   }
+  m_brdaddr=Ipv4Address("255.255.255.255");
+}
+void DhcpHeader::SetBroadcast (Ipv4Address brdaddr)        //new
+{
+  if(m_opt[OP_BRDADDR] == false)
+   {
+     m_len += 6;
+     m_opt[OP_BRDADDR] = true;
+   }
+  m_brdaddr=brdaddr;
+}
+Ipv4Address DhcpHeader::GetBroadcast (void)
+{
+  return m_brdaddr;
 }
 
 void DhcpHeader::SetRouter (Ipv4Address addr)
@@ -347,6 +371,12 @@ DhcpHeader::Serialize (Buffer::Iterator start) const
       i.WriteU8 (4);
       i.WriteHtonU32 (m_rebind);
     }
+  if(m_opt[OP_BRDADDR])     //new
+    {
+      i.WriteU8 (OP_BRDADDR);
+      i.WriteU8 (4);
+      WriteTo (i,m_brdaddr);
+    }
   i.WriteU8 (OP_END);
 }
 
@@ -492,6 +522,19 @@ uint32_t DhcpHeader::Deserialize (Buffer::Iterator start)
             {
               i.ReadU8 ();
               m_rebind = i.ReadNtohU32 ();
+              len += 5;
+            }
+          else
+            {
+              NS_LOG_WARN ("Malformed Packet");
+              return 0;
+            }
+          break;
+        case OP_BRDADDR:           //new
+          if (len + 5 < clen)
+            {
+              i.ReadU8 ();
+              ReadFrom(i,m_brdaddr);// = i.ReadNtohU32 ();
               len += 5;
             }
           else
