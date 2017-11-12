@@ -311,6 +311,7 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
       newDhcpHeader.SetLease (m_lease.GetSeconds ());
       newDhcpHeader.SetRenew (m_renew.GetSeconds ());
       newDhcpHeader.SetRebind (m_rebind.GetSeconds ());
+      newDhcpHeader.SetBroadcast();
       newDhcpHeader.SetTime ();
       if (m_gateway != Ipv4Address ())
         {
@@ -318,7 +319,7 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
         }
       packet->AddHeader (newDhcpHeader);
 
-      if ((m_socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("255.255.255.255"), from.GetPort ()))) >= 0)
+      if ((m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()))) >= 0)
         {
           NS_LOG_INFO ("DHCP OFFER" << " Offered Address: " << offeredAddress);
         }
@@ -355,11 +356,12 @@ void DhcpServer::SendAck (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddr
       newDhcpHeader.SetChaddr (sourceChaddr);
       newDhcpHeader.SetYiaddr (address);
       newDhcpHeader.SetTran (tran);
+      newDhcpHeader.SetBroadcast();
       newDhcpHeader.SetTime ();
       packet->AddHeader (newDhcpHeader);
       if (from.GetIpv4 () != address)
         {
-          m_socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("255.255.255.255"), from.GetPort ()));
+          m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()));
         }
       else
         {
@@ -375,11 +377,12 @@ void DhcpServer::SendAck (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddr
       newDhcpHeader.SetChaddr (sourceChaddr);
       newDhcpHeader.SetYiaddr (address);
       newDhcpHeader.SetTran (tran);
+      newDhcpHeader.SetBroadcast();
       newDhcpHeader.SetTime ();
       packet->AddHeader (newDhcpHeader);
       if (from.GetIpv4 () != address)
         {
-          m_socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("255.255.255.255"), from.GetPort ()));
+          m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()));
         }
       else
         {
