@@ -104,6 +104,7 @@ public:
   {
     OP_MASK = 1,        //!< BOOTP Option 1: Address Mask
     OP_ROUTE = 3,       //!< BOOTP Option 3: Router Option
+    OP_BRDADDR = 28,    //!< BOOTP Option 28: Broadcast Address Option    //new
     OP_ADDREQ = 50,     //!< BOOTP Option 50: Requested Address
     OP_LEASE = 51,      //!< BOOTP Option 51: Address Lease Time
     OP_MSGTYPE = 53,    //!< BOOTP Option 53: DHCP Message Type
@@ -225,12 +226,27 @@ public:
    * \param addr 32 bit mask
    */
   void SetMask (uint32_t addr);
-
+  
   /**
    * \brief Return the mask of the network
    * \return 32 bit mask
    */
   uint32_t GetMask (void) const;
+
+  /**
+   * \breif Set the Broadcast address of the Client's Subnet.    //new
+   */
+  void SetBroadcast (void);
+  /**
+   * \breif Set the Broadcast address of the Client's Subnet.    //new
+   * \param Broadcast address to be assigned
+   */
+  void SetBroadcast (Ipv4Address brdaddr);
+
+  /**
+   * \breif Returns the Broadcast address of the Client's Subnet.    //new
+   */
+  Ipv4Address GetBroadcast (void);
 
   /**
    * \brief Set the Ipv4Address of gateway to be used
@@ -310,6 +326,7 @@ private:
   Ipv4Address m_dhcps;                   //!< DHCP server IP address
   Ipv4Address m_req;                     //!< Requested Address
   Ipv4Address m_route;                   //!< Router Option Address
+  Ipv4Address m_brdaddr;                 //!< Broadcast Address                   //new
   uint8_t m_sname[64];                   //!< Server name (Padded for now)
   uint8_t m_file[128];                   //!< File name (Padded for now)
   uint8_t m_magic_cookie[4];             //!< DHCP Magic Cookie
