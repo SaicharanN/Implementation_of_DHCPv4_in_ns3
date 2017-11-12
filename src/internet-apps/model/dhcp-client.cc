@@ -316,10 +316,11 @@ void DhcpClient::Boot (void)
   header.SetTran (m_tran);
   header.SetType (DhcpHeader::DHCPDISCOVER);
   header.SetTime ();
+  header.SetBroadcast();   //new
   header.SetChaddr (m_chaddr);
   packet->AddHeader (header);
 
-  if ((m_socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("255.255.255.255"), DHCP_PEER_PORT))) >= 0)
+  if ((m_socket->SendTo (packet, 0, InetSocketAddress (header.GetBroadcast(), DHCP_PEER_PORT))) >= 0)   //edit
     {
       NS_LOG_INFO ("DHCP DISCOVER sent" );
     }
@@ -383,9 +384,10 @@ void DhcpClient::Request (void)
       header.SetTime ();
       header.SetTran (m_tran);
       header.SetReq (m_offeredAddress);
+      header.SetBroadcast ();       //new
       header.SetChaddr (m_chaddr);
       packet->AddHeader (header);
-      m_socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("255.255.255.255"), DHCP_PEER_PORT));
+      m_socket->SendTo (packet, 0, InetSocketAddress (header.GetBroadcast(), DHCP_PEER_PORT));   //edit
       m_state = WAIT_ACK;
       m_nextOfferEvent = Simulator::Schedule (m_nextoffer, &DhcpClient::Select, this);
     }
