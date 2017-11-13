@@ -300,6 +300,7 @@ void DhcpClient::NetHandler (Ptr<Socket> socket)
   if (m_state == WAIT_ACK && header.GetType () == DhcpHeader::DHCPNACK)
     {
       Simulator::Remove (m_nextOfferEvent);
+      NS_LOG_INFO ("Request for "<<header.GetReq()<<" Got NAK DUE TO: "<<header.GetNAKMessage());   //new2
       Boot ();
     }
 }
