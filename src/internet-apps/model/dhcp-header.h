@@ -28,6 +28,8 @@
 #include "ns3/header.h"
 #include <ns3/mac48-address.h>
 #include <ns3/mac64-address.h>
+#include <bits/stdc++.h>
+using namespace std;
 
 namespace ns3 {
 
@@ -109,6 +111,7 @@ public:
     OP_LEASE = 51,      //!< BOOTP Option 51: Address Lease Time
     OP_MSGTYPE = 53,    //!< BOOTP Option 53: DHCP Message Type
     OP_SERVID = 54,     //!< BOOTP Option 54: Server Identifier
+    OP_MSG = 56,        //!< BOOTP Option 56: Message Option to specify reason for DHCPNAK   //new2
     OP_RENEW = 58,      //!< BOOTP Option 58: Address Renewal Time
     OP_REBIND = 59,     //!< BOOTP Option 59: Address Rebind Time
     OP_END = 255        //!< BOOTP Option 255: END
@@ -249,6 +252,18 @@ public:
   Ipv4Address GetBroadcast (void);
 
   /**
+   * \brief Set the Error message about DHCPNAK                //new2
+   * \param msg The error message to be assigned
+   */
+  void SetNAKMessage(string msg);                           
+
+  /**
+   *\brief Return the Error Message about DHCPNAK             //new2
+   *\return The error message
+   */
+  string GetNAKMessage(void);
+
+  /**
    * \brief Set the Ipv4Address of gateway to be used
    * \param addr The Ipv4Address of the gateway
    */
@@ -334,6 +349,7 @@ private:
   uint32_t m_renew;                      //!< The renewal time for the client
   uint32_t m_rebind;                     //!< The rebinding time for the client
   bool m_opt[255];                       //!< BOOTP option list
+  string m_nakmsg;                        //!< Error message about DHCPNAK        //new2
 };
 
 } // namespace ns3
