@@ -380,9 +380,20 @@ void DhcpServer::SendAck (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddr
       newDhcpHeader.SetBroadcast();
       newDhcpHeader.SetTime ();
       packet->AddHeader (newDhcpHeader);
+      
+      ExpiredAddressIter it;                                      //new2
+      for(it=m_expiredAddresses.begin();it!=m_expiredAddresses.end();it++)
+           if(*it == sourceChaddr)
+                break;
+      //it=m_expiredAddresses.find(sourceChaddr);
+      if(it!=m_expiredAddresses.end())
+         newDhcpHeader.SetNAKMessage("NAK BECAUSE ADDRESS IS EXPIRED");
+      else
+         newDhcpHeader.SetNAKMessage("NAK BECAUSE ADDRESS IS RELEASED");
+      
       if (from.GetIpv4 () != address)
         {
-          m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()));
+          m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()));      //new
         }
       else
         {
