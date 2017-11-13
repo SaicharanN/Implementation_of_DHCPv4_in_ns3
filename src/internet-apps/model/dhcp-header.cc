@@ -204,6 +204,24 @@ void DhcpHeader::SetBroadcast (Ipv4Address brdaddr)        //new
    }
   m_brdaddr=brdaddr;
 }
+
+void DhcpHeader::SetNAKMessage(string msg)                //new2
+{
+   if(m_opt[OP_MSG]==false)
+   {
+     m_len+=(2+msg.length());
+     m_opt[OP_MSG] = true;
+   }
+   m_nakmsg="";
+   m_nakmsg.append(msg);
+   printf("\nkfn kjaewnfkjwaefewjkfnjkewfncn wejr jewnj njewnrweenr nawen jrjaewn nawenrwerf w\n");
+}
+
+string DhcpHeader::GetNAKMessage(void)                //new2
+{
+   return m_nakmsg;
+}
+
 Ipv4Address DhcpHeader::GetBroadcast (void)
 {
   return m_brdaddr;
@@ -377,6 +395,13 @@ DhcpHeader::Serialize (Buffer::Iterator start) const
       i.WriteU8 (4);
       WriteTo (i,m_brdaddr);
     }
+  if(m_opt[OP_MSG])        //new2
+    {
+      i.WriteU8 (OP_MSG);
+      i.WriteU8 (m_nakmsg.length());
+      for(uint32_t strit=0;strit<m_nakmsg.length();strit++)
+          i.WriteU8(m_nakmsg[strit]);
+    }
   i.WriteU8 (OP_END);
 }
 
@@ -543,6 +568,13 @@ uint32_t DhcpHeader::Deserialize (Buffer::Iterator start)
               return 0;
             }
           break;
+        case OP_MSG:               //new2
+          if (len + m_nakmsg.length() < clen)
+            {
+              i.ReadU8 ();
+              for(uint32_t strit=0;strit<m_nakmsg.length();strit++)
+                  m_nakmsg[strit]=i.ReadU8();
+            }
         case OP_END:
           loop = false;
           break;
