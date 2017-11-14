@@ -318,6 +318,7 @@ void DhcpClient::Boot (void)
   header.SetType (DhcpHeader::DHCPDISCOVER);
   header.SetTime ();
   header.SetBroadcast();   //new
+  header.SetMaxMsgLen();   //new3
   header.SetChaddr (m_chaddr);
   packet->AddHeader (header);
 
@@ -386,6 +387,7 @@ void DhcpClient::Request (void)
       header.SetTran (m_tran);
       header.SetReq (m_offeredAddress);
       header.SetBroadcast ();       //new
+      header.SetMaxMsgLen();        //new3
       header.SetChaddr (m_chaddr);
       packet->AddHeader (header);
       m_socket->SendTo (packet, 0, InetSocketAddress (header.GetBroadcast(), DHCP_PEER_PORT));   //edit
@@ -400,6 +402,7 @@ void DhcpClient::Request (void)
       m_tran = (uint32_t) (m_ran->GetValue ());
       header.SetTran (m_tran);
       header.SetTime ();
+      header.SetMaxMsgLen ();      //new3
       header.SetType (DhcpHeader::DHCPREQ);
       header.SetReq (m_myAddress);
       m_offeredAddress = m_myAddress;
