@@ -214,12 +214,32 @@ void DhcpHeader::SetNAKMessage(string msg)                //new2
    }
    m_nakmsg="";
    m_nakmsg.append(msg);
-   printf("\nkfn kjaewnfkjwaefewjkfnjkewfncn wejr jewnj njewnrweenr nawen jrjaewn nawenrwerf w\n");
 }
 
 string DhcpHeader::GetNAKMessage(void)                //new2
 {
    return m_nakmsg;
+}
+
+uint16_t DhcpHeader::GetMsgLen(void)                  //new3
+{
+   return m_len;
+}
+
+void DhcpHeader::SetMaxMsgLen(void)                                 //new3
+{
+   if(m_opt[OP_MAXMSG]== false)
+   {
+     m_len += 4;
+     m_opt[OP_MAXMSG]= true;
+   }
+   uint16_t maximum_len = (uint16_t) 65536;          // Since the maximum accepting length is 2 bytes
+   m_maxmsg=maximum_len;
+}
+
+uint16_t DhcpHeader::GetMaxMsgLen(void)                         //new3
+{ 
+   return m_maxmsg;
 }
 
 Ipv4Address DhcpHeader::GetBroadcast (void)
@@ -402,6 +422,13 @@ DhcpHeader::Serialize (Buffer::Iterator start) const
       for(uint32_t strit=0;strit<m_nakmsg.length();strit++)
           i.WriteU8(m_nakmsg[strit]);
     }
+  if(m_opt[OP_MAXMSG])     //new3
+    {
+      i.WriteU8 (OP_MAXMSG);
+      i.WriteU8 (2);
+      i.WriteHtonU16(m_maxmsg);
+    }
+      
   i.WriteU8 (OP_END);
 }
 
@@ -574,6 +601,17 @@ uint32_t DhcpHeader::Deserialize (Buffer::Iterator start)
               i.ReadU8 ();
               for(uint32_t strit=0;strit<m_nakmsg.length();strit++)
                   m_nakmsg[strit]=i.ReadU8();
+            }
+        case OP_MAXMSG:           //new3
+          if (len + 3 < clen)
+            {
+              i.ReadU8 ();
+              m_maxmsg = i.ReadNtohU16 ();
+            }
+          else 
+            {
+              NS_LOG_WARN ("Malformed Packet");
+              return 0;
             }
         case OP_END:
           loop = false;
