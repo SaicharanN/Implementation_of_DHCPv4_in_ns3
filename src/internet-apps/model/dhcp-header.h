@@ -112,6 +112,7 @@ public:
     OP_MSGTYPE = 53,    //!< BOOTP Option 53: DHCP Message Type
     OP_SERVID = 54,     //!< BOOTP Option 54: Server Identifier
     OP_MSG = 56,        //!< BOOTP Option 56: Message Option to specify reason for DHCPNAK   //new2
+    OP_MAXMSG =57,      //!< BOOTP Option 57: maximum length DHCP message that client willing to accept //new3
     OP_RENEW = 58,      //!< BOOTP Option 58: Address Renewal Time
     OP_REBIND = 59,     //!< BOOTP Option 59: Address Rebind Time
     OP_END = 255        //!< BOOTP Option 255: END
@@ -264,6 +265,22 @@ public:
   string GetNAKMessage(void);
 
   /**
+   *\breif get length of the NAK message
+   *\return the length of the NAK message
+   */
+  uint16_t GetMsgLen(void);                                     //new3
+  /** 
+   *\breif set the maximum DHCP Message Size
+   */
+  void SetMaxMsgLen(void);                                      //new3
+
+  /**
+   *\breif get the maximum DHCP Message Size
+   *\return maximum length 
+   */
+  uint16_t GetMaxMsgLen(void);                                      //new3
+
+  /**
    * \brief Set the Ipv4Address of gateway to be used
    * \param addr The Ipv4Address of the gateway
    */
@@ -350,6 +367,7 @@ private:
   uint32_t m_rebind;                     //!< The rebinding time for the client
   bool m_opt[255];                       //!< BOOTP option list
   string m_nakmsg;                        //!< Error message about DHCPNAK        //new2
+  uint16_t m_maxmsg;                     //!< Maximum length of DHCP Message client can accept     //new3
 };
 
 } // namespace ns3
