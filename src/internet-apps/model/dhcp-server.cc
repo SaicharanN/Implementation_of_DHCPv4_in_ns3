@@ -319,9 +319,14 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
         }
       packet->AddHeader (newDhcpHeader);
 
-      if ((m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()))) >= 0)
+
+      if (newDhcpHeader.GetMsgLen()<=newDhcpHeader.GetMaxMsgLen() && (m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()))) >= 0)                                                             //new
         {
           NS_LOG_INFO ("DHCP OFFER" << " Offered Address: " << offeredAddress);
+        }
+      else if(newDhcpHeader.GetMsgLen()>newDhcpHeader.GetMaxMsgLen())
+        {
+          NS_LOG_INFO("Message Size Exceeded the Maximum Length");                 //new3
         }
       else
         {
@@ -391,13 +396,17 @@ void DhcpServer::SendAck (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddr
       else
          newDhcpHeader.SetNAKMessage("NAK BECAUSE ADDRESS IS RELEASED");
       
-      if (from.GetIpv4 () != address)
+      if (from.GetIpv4 () != address && newDhcpHeader.GetMsgLen()<newDhcpHeader.GetMaxMsgLen())                 //new3
         {
           m_socket->SendTo (packet, 0, InetSocketAddress (newDhcpHeader.GetBroadcast(), from.GetPort ()));      //new
         }
-      else
+      else if(newDhcpHeader.GetMsgLen()<newDhcpHeader.GetMaxMsgLen())
         {
           m_socket->SendTo (packet, 0, from);
+        }
+      else 
+        {
+          NS_LOG_INFO("Message Size Exceeded the Maximum Length");                 //new3
         }
       NS_LOG_INFO ("IP addr does not exists or released!");
     }
