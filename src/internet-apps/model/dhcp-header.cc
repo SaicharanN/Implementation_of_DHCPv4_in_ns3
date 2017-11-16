@@ -596,17 +596,24 @@ uint32_t DhcpHeader::Deserialize (Buffer::Iterator start)
             }
           break;
         case OP_MSG:               //new2
-          if (len + m_nakmsg.length() < clen)
+          if (len + m_nakmsg.length()+1 < clen)
             {
               i.ReadU8 ();
               for(uint32_t strit=0;strit<m_nakmsg.length();strit++)
                   m_nakmsg[strit]=i.ReadU8();
+              len+=(m_nakmsg.length()+1);
+            }
+         else 
+            {
+              NS_LOG_WARN ("Malformed Packet");
+              return 0;
             }
         case OP_MAXMSG:           //new3
           if (len + 3 < clen)
             {
               i.ReadU8 ();
               m_maxmsg = i.ReadNtohU16 ();
+              len+=3;
             }
           else 
             {
