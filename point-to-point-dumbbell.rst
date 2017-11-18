@@ -12,13 +12,10 @@ topology with pointToPoint links. This takes the following as parameters
 and creates the desired dumbbell model:
 
 * number of left side leaf nodes in the dumbbell
-* PointToPointHelper used to install the links between the left leaf nodes 
-and the left-most router
+* PointToPointHelper used to install the links between the left leaf nodes and the left-most router
 * number of right side leaf nodes in the dumbbell
-* PointToPointHelper used to install the links between the right leaf nodes 
-and the right-most router
-* PointToPointHelper used to install the link between the inner-routers, 
-usually known as the bottleneck link 
+* PointToPointHelper used to install the links between the right leaf nodes and the right-most router
+* PointToPointHelper used to install the link between the inner-routers, usually known as the bottleneck link 
 
 Each of the Links in dumbbell model is a pointToPoint link and thereby,
 are connected via an PointToPointChannel. This channel models two wires 
@@ -28,6 +25,7 @@ packet sent. That is, we do not model Flag Sequences, Frame Check Sequences nor
 do we "escape" any data.
 
 PointToPointDumbbellHelper has the following variables in as it's attributes :
+
 *  m_leftLeaf               - a NodeContainer stores Left Leaf nodes
 *  m_leftLeafDevices        - a NetDeviceContainer stores Left Leaf NetDevices
 *  m_rightLeaf              - a NodeContainer stores Right Leaf nodes
